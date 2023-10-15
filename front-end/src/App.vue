@@ -27,7 +27,7 @@ img.bgImage(src="/img/hero.jpg")
 	PraiMap(v-if="item.loaded" :idMap="`mapNumber-${item.tab}-${count}`" @changeTab="item.tab=$event;item.key++"
 		:key="item.key" :data="item.data" :keyUpdate="item.key" :size="item.form.size" :tab="item.tab" :city="item.form.city"
 		@changeSpinner="item.spinner = $event")
-	.btn.compareBtn(@click="$_compare" v-if="item.form.city && count === 0") Сравнить
+	.btn.compareBtn(@click="$_compare" v-if="item.loaded && count === 0") Сравнить
 </template>
 
 <script>
