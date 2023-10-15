@@ -23,8 +23,9 @@ img.bgImage(src="/img/hero.jpg")
 		button.btn(type="submit" :disabled="item.spinner")
 			PraiSpinner(v-if="item.spinner")
 			span(v-else) Начать анализ
+	.textAwait(v-if="!item.loaded") Загрузка данных занимает от 20с
 	.title.moreMarginTitle(v-if="item.loaded") Результаты поиска
-	PraiMap(v-if="item.loaded" :idMap="`mapNumber-${item.tab}-${count}`" @changeTab="item.tab=$event;item.key++"
+	PraiMap(v-if="item.loaded" :idMap="`mapNumber-${item.tab}-${count}-${item.unicale}`" @changeTab="item.tab=$event;item.key++"
 		:key="item.key" :data="item.data" :keyUpdate="item.key" :size="item.form.size" :tab="item.tab" :city="item.form.city"
 		@changeSpinner="item.spinner = $event")
 	.btn.compareBtn(@click="$_compare" v-if="item.loaded && count === 0") Сравнить
@@ -52,7 +53,8 @@ export default {
 					spinner: false,
 					key:0,
 					tab:0,
-					data:{}
+					data:{},
+					unicale:0
 				}
 			]
 		}
@@ -70,6 +72,7 @@ export default {
 		},
 		$_compare(){
 			this.arrayMaps.push({
+				unicale: new Date().getTime(),
 				form: {city: 'Тула', size: 8, sizeText:'1000 кв.'},
 				loaded: false,
 				spinner: false,
@@ -253,5 +256,9 @@ export default {
 		right: 10px;
 		z-index: 1000;
 		cursor: pointer;
+	}
+	.textAwait{
+		text-align: right;
+		margin-top: 5px;
 	}
 </style>
