@@ -60,7 +60,7 @@ export default {
 	components:{PraiSpinner, PraiMap,VueSelect},
 	methods:{
 		async requestFnc(method,url,formData){
-			const res = await axios({method, url: 'http://192.168.0.107:3000/api/'+url, data:formData})
+			const res = await axios({method, url: 'http://185.103.111.98:65535/api/'+url, data:formData})
 			if(res.status === 200){
 				return res.data
 			}else return false
