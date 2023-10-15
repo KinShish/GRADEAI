@@ -75,4 +75,5 @@
 }
 .leaflet-marker-icon.leaflet-interactive, .leaflet-image-layer.leaflet-interactive, .leaflet-pane > svg path.leaflet-interactive, svg.leaflet-image-layer.leaflet-interactive path{
     outline: none !important;
+    stroke-width: 1px !important;
 }
