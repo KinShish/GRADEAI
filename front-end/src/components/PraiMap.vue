@@ -77,6 +77,11 @@
 			div
 				span.colorBlock(:style="`background:${$root.colorStatus[0]}`")
 				span.nameColor Не удовл.
+	.commentBlock
+		.title Комментарий
+		ul.transitionBlockText.showBlockText(style="max-height:unset;")
+			li(v-for="item of selectedPoint.violations.data") В радиусе 100 м от организация ({{`${item.name}${item.street?','+item.street:''}`}}) находятся отрицательнй объект ({{item.bad}})
+			li(v-for="item of selectedPoint.transport.data") В радиусе 200 м от точки ({{`${item.name}${item.street?','+item.street:''}`}}) не находятся остановок общественного транспорта
 </template>
 
 <script>
@@ -105,7 +110,7 @@ const h3BoundsToPolygon = (lngLatH3Bounds) => {
 	return lngLatH3Bounds;
 };
 export default {
-	emits:['changeTab'],
+	emits:['changeTab','changeSpinner'],
 	props:{
 		idMap:String,
 		data:{
@@ -6386,23 +6391,15 @@ export default {
 				if(this.marker) this.marker.remove()
 				this.marker = L.marker(e.latlng).addTo(map);
 
-
-				const computedCoords = cellsToMultiPolygon([coords],8)
-
-				const h3Bounds = cellToBoundary(computedCoords[0]);
-				L.polygon(h3BoundsToPolygon(h3Bounds))
-					.setStyle({fillColor :this.getColorByRating(50),color:this.getColorByRating(50)})
-					.addTo(map);
+				this.$emit('changeSpinner',true)
 
 				const res = await this.$root.requestFnc('POST','get/point',{points:coords})
 				if(res){
 
-
-
-
 					this.selectedPoint = res
 					this.openSelectedPoint = true
 				}
+				this.$emit('changeSpinner',false)
 				this.load = false
 			}
 		},
@@ -6512,6 +6509,7 @@ export default {
 	},
 
 	mounted() {
+		console.log(this.$props.idMap)
 		map = L.map(this.$props.idMap);
 
 		L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -6668,10 +6666,20 @@ export default {
 		font-size: 16px;
 		font-weight: 700;
 	}
+	.commentBlock{
+		padding: 20px;
+		border-radius: 10px;
+		border: 1px solid #DEE2E6;
+		background: #FFF;
+		width: 100%;
+	}
 	@media (max-width: 768px) {
 		.fillScreen{
 			height: 500px;
 			margin-top: 20px;
+		}
+		.greyBlock{
+			flex-basis: 100%;
 		}
 	}
 </style>
