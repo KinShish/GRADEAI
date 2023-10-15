@@ -1,0 +1,78 @@
+.leaflet-control-attribution a svg{
+    display: none !important;
+}
+.btn,.btn:hover,.btn:active,.btn:focus,.btn:disabled{
+    padding: 0 16px;
+    height: 45px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 16px;
+    line-height: 100%;
+    background-color: #179273;
+    cursor: pointer;
+    border-radius: 10px;
+    color: white;
+    border:none;
+    outline: none;
+    box-shadow: none;
+    transition: .3s ease-in-out;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+}
+.btn:disabled{
+   background-color: #8bc8b9 !important;
+}
+.form-group label{
+    color: #040034;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 20px;
+    margin-bottom: 6px;
+    display: block;
+}
+/*Селект с поиском начало*/
+.v-select .vs__search, .v-select .vs__search:focus{
+    border: none;
+    padding: 0;
+    margin: 0;
+    font-size: 14px;
+    line-height: 17px;
+    border-radius: 0;
+}
+.v-select .vs__dropdown-toggle{
+    border: 1px solid #DEE2E6;
+    border-radius: 8px;
+    box-shadow: none;
+    outline: none;
+    padding: 9px 10px;
+    background: white;
+    font-size: 14px;
+    line-height: 17px;
+    transition: .3s ease;
+    cursor: pointer;
+}
+.v-select .vs__dropdown-menu{
+    border: 1px solid white;
+}
+.v-select .vs__actions *{
+    display: none;
+}
+.v-select .vs__selected{
+    font-size: 14px;
+    line-height: 14px;
+    color: #343A40;
+    padding: 0;
+    margin: 0;
+}
+.v-select .vs__dropdown-option:hover, .v-select .vs__dropdown-option:focus, .v-select .vs__dropdown-option:active{
+    background-color: #179273;
+    color: white;
+}
+.v-select .vs__dropdown-option--selected{
+    background-color: #179273;
+    color: white;
+}
+.leaflet-marker-icon.leaflet-interactive, .leaflet-image-layer.leaflet-interactive, .leaflet-pane > svg path.leaflet-interactive, svg.leaflet-image-layer.leaflet-interactive path{
+    outline: none !important;
+}
