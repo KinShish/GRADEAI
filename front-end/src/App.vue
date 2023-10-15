@@ -1,5 +1,7 @@
 <template lang="pug">
 img.bgImage(src="/img/hero.jpg")
+.headerMobile
+	img(src="/img/logo.svg")
 .titleBlock Сервис для
 	span оценки
 	| достаточности
@@ -114,6 +116,7 @@ export default {
 					this.arrayMaps[index].key = new Date().getTime()
 					this.arrayMaps[index].loaded = true
 					this.arrayMaps[index].spinner = false
+					window.scroll(0, 200)
 				}
 			}
 		},
@@ -147,7 +150,8 @@ export default {
 		font-size: 55px;
 		line-height: 70px;
 		flex-direction: row;
-		width: 1100px;
+		max-width: 1100px;
+		width: 100%;
 		font-weight: 700;
 		margin: 0 auto;
 	}
@@ -160,7 +164,8 @@ export default {
 		border-radius: 20px;
 		background: #FFF;
 		box-shadow: 10px 40px 50px 0 rgba(80, 80, 80, 0.40);
-		width: 1100px;
+		max-width: 1100px;
+		width: 100%;
 		margin: auto;
 	}
 	.title{
@@ -215,5 +220,53 @@ export default {
 		font-weight: 700;
 		line-height: 24px;
 		margin-bottom: 25px;
+	}
+	@media (max-width: 1100px) {
+		.titleBlock{
+			max-width: calc(100% - 40px);
+		}
+	}
+	.headerMobile{
+		display: none;
+	}
+	@media (max-width: 768px) {
+		.titleBlock{
+			font-size: 18px;
+			line-height: 25px;
+		}
+		.title{
+			font-size: 13px;
+			line-height: 20px;
+		}
+		.formAnal{
+			flex-wrap: wrap;
+		}
+		.formAnal .btn{
+			flex-basis: 100%;
+			margin-top: 20px;
+		}
+		.titleBlock{
+			padding-top: 85px;
+			padding-bottom: 30px;
+		}
+		.mainContent{
+			box-shadow: none;
+			padding: 20px;
+		}
+		.title{
+			font-size: 20px;
+			line-height: 20px;
+		}
+		.headerMobile{
+			position: fixed;
+			top: 0;
+			width: 100%;
+			left: 0;
+			height: 50px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			background-color: white;
+		}
 	}
 </style>

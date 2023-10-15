@@ -18,6 +18,9 @@
 			li
 				span {{selectedPoint.educational}} -
 				| Объекты образования
+			li(v-if="selectedPoint.good-(selectedPoint.park + selectedPoint.educational)")
+				span {{selectedPoint.good-(selectedPoint.park + selectedPoint.educational)}} -
+				| Другое
 		.showMore(:class="{'showMoreActive':openMore[0]}" @click="openMore[0] = !openMore[0]") {{openMore[0]?'Скрыть данные':'Показать данные'}}
 			img(src="/img/arrow.svg")
 	.greyBlock
@@ -32,6 +35,9 @@
 			li
 				span {{selectedPoint.cigarettes}} -
 				| Табачные магазины
+			li(v-if="selectedPoint.bad-(selectedPoint.cigarettes + selectedPoint.alcohol)")
+				span {{selectedPoint.bad-(selectedPoint.cigarettes + selectedPoint.alcohol)}} -
+				| Другое
 		.showMore(:class="{'showMoreActive':openMore[1]}" @click="openMore[1] = !openMore[1]") {{openMore[1]?'Скрыть данные':'Показать данные'}}
 			img(src="/img/arrow.svg")
 	.greyBlock(v-if="tab === 0")
@@ -6508,7 +6514,8 @@ export default {
 
 <style scoped>
 	.fillScreen {
-		width: 1050px;
+		max-width: 1050px;
+		width: 100%;
 		height: 620px;
 		margin: auto;
 	}
@@ -6641,5 +6648,11 @@ export default {
 		margin-top: 20px;
 		font-size: 16px;
 		font-weight: 700;
+	}
+	@media (max-width: 768px) {
+		.fillScreen{
+			height: 500px;
+			margin-top: 20px;
+		}
 	}
 </style>
