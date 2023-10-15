@@ -1,2 +1,4 @@
 notebook
-OSMPythonTools
+osmnx
+Flask
+flask-cors

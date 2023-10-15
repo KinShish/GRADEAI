@@ -1,34 +1,64 @@
-import osmnx as ox
-import networkx as nx
-ox.config(log_console=True, use_cache=True)
-# define a point at the corner of California St and Mason St in SF
-# location_point = (54.17911, 37.58745)
-# gdf =ox.features_from_point(location_point, tags={'place': "suburb"}, dist=1000)
-#
-# print(gdf)
-#fig, ax = ox.plot_footprints(gdf, figsize=(30, 30))
-place = "Тула, Россия"
-tags = {'admin_level': '9', "type": "relation"}
-gdf = ox.features_from_place(place, tags)
-
-index = gdf.index
-
-for i in index:
-    if i[0] == "relation":
-        gdf_new = ox.geocode_to_gdf("R"+str(i[1]), by_osmid=True)
-        #fig, ax = ox.plot_footprints(gdf_new, figsize=(3, 3))
-        print(gdf_new["geometry"][0])
-        with open(f"{i[1]}.txt", "w") as file:
-            file.write(str(gdf_new["geometry"][0]))
-#fig, ax = ox.plot_footprints(gdf, figsize=(30, 30))
-
-"swimming_pool","stadium","fitness_centre","sports_hall","sports_centre","pitch","park","playground","picnic_table",
-"nature_reserve","track","fitness_centre","fitness_station","stadium","outdoor_seating","golf_course","garden",
-"common","sports_hall","dog_park","resort","horse_riding","fishing","water_park","beach_resort","dance","miniature_golf",
-"ice_rink","bird_hide","swimming_area","bandstand","schoolyard","disc_golf_course","hackerspace","summer_camp","indoor_play",
-"trampoline_park","bathing_place","wildlife_hide","barefoot","paddling_pool","village_swing","sunbathing","foot_bath",
-"soccer_golf","wellness"
+from flask import Flask
+from flask import request
+from flask import abort
+from flask_cors import CORS
+import function.getDataCity as gtc
+from threading import Thread
 
 
+def create_app():
+    print("Сервер запущен")
+    app = Flask(__name__)
+    CORS(app)
+
+    @app.route('/api/get/city', methods=['POST'])
+    def get_city():
+        if not request.json or not 'name' in request.json:
+            abort(400)
+        try:
+            return gtc.get_data_city(request.json['name'])
+        except Exception as ex:
+            print("Ошибка /api/get/city:", ex)
+            abort(400)
+
+    @app.route('/api/get/point', methods=['POST'])
+    def get_point():
+        if not request.json or not 'points' in request.json:
+            abort(400)
+        try:
+            return gtc.get_data_point(request.json['points'], 5000)
+        except Exception as ex:
+            print("Ошибка /api/get/point:", ex)
+            abort(400)
+
+    @app.route('/api/get/points', methods=['POST'])
+    def get_points():
+        print(request.json)
+        if not request.json or not 'points' in request.json or not 'dist' in request.json:
+            abort(400)
+        try:
+            result = []
+            array_thread = []
+            for i in request.json['points']:
+                result.append([])
+
+            for idx, point in enumerate(request.json['points']):
+                #gtc.get_data_points(point, request.json['dist'], result, idx)
+                t = Thread(target=gtc.get_data_points, args=(point, request.json['dist'], result, idx))
+                t.daemon = True
+                t.start()
+                array_thread.append(t)
+            for t in array_thread:
+                t.join()
+                print("Завершен")
+            return result
+        except Exception as ex:
+            print("Ошибка /api/get/point:", ex)
+            abort(400)
+
+    return app
 
 
+if __name__ == '__main__':
+    app = create_app()
+    app.run(host='192.168.0.107', port=3000, debug=True)
