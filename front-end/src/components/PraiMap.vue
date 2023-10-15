@@ -2,6 +2,7 @@
 .listTabs
 	.myTab(:class="{'activeTab':tab === 0}" @click="$_clickTab(0)") Город
 	.myTab(:class="{'activeTab':tab === 1}" @click="$_clickTab(1)") Зонирование
+	.myTab(:class="{'activeTab':tab === 2}" @click="$_clickTab(2)") По точке
 .positionRelative
 	.fillScreen(:id="$props.idMap")
 .titleName(v-if="openSelectedPoint") {{selectedPoint.name}}
@@ -81,7 +82,7 @@
 <script>
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
-import { polygonToCells, cellToBoundary, cellToLatLng, getHexagonAreaAvg, UNITS} from 'h3-js'
+import { polygonToCells, cellToBoundary, cellToLatLng, cellsToMultiPolygon, getHexagonAreaAvg, UNITS} from 'h3-js'
 let map, hexLayer;
 
 const GeoUtils = {
@@ -6330,7 +6331,8 @@ export default {
 					],
 					geo:[56.8584, 35.9006]
 				}
-			}
+			},
+			marker:null
 		}
 	},
 	methods: {
@@ -6343,13 +6345,7 @@ export default {
 		$_changeTab(){
 			if (hexLayer) hexLayer.remove();
 			map.setView(this.centerGeo, this.tab===0?10:14);
-			if(this.tab){
-				this.$nextTick(()=>{
-					//map.on("zoomend", ()=>{this.updateMapDisplay()});
-					//map.on("moveend", ()=>{this.updateMapDisplay()});
-					this.updateMapDisplay();
-				})
-			}else{
+			if(this.tab === 0){
 				this.geometryGeoJSON = L.geoJSON();
 				this.geometryGeoJSON.addTo(map);
 				this.$props.data.forEach(item=>{
@@ -6371,6 +6367,43 @@ export default {
 						})
 						.addTo(map);
 				})
+			}
+			if(this.tab === 1){
+				this.$nextTick(()=>{
+					//map.on("zoomend", ()=>{this.updateMapDisplay()});
+					//map.on("moveend", ()=>{this.updateMapDisplay()});
+					this.updateMapDisplay();
+				})
+			}
+			if(this.tab === 2) map.on('click', (e)=>{this.$_clickMap(e)});
+		},
+		async $_clickMap(e){
+			if(!this.load){
+				this.load = true
+				if (hexLayer) hexLayer.remove();
+				hexLayer = L.layerGroup().addTo(map);
+				const coords = [e.latlng.lat,e.latlng.lng]
+				if(this.marker) this.marker.remove()
+				this.marker = L.marker(e.latlng).addTo(map);
+
+
+				const computedCoords = cellsToMultiPolygon([coords],8)
+
+				const h3Bounds = cellToBoundary(computedCoords[0]);
+				L.polygon(h3BoundsToPolygon(h3Bounds))
+					.setStyle({fillColor :this.getColorByRating(50),color:this.getColorByRating(50)})
+					.addTo(map);
+
+				const res = await this.$root.requestFnc('POST','get/point',{points:coords})
+				if(res){
+
+
+
+
+					this.selectedPoint = res
+					this.openSelectedPoint = true
+				}
+				this.load = false
 			}
 		},
 		computeAverageEdgeLengthInMeters: function(vertexLocations) {
@@ -6459,7 +6492,6 @@ export default {
 						let svgElement = document.createElementNS("http://www.w3.org/2000/svg", "svg");
 						svgElement.setAttribute('xmlns', "http://www.w3.org/2000/svg");
 						svgElement.setAttribute('viewBox', "0 0 200 200");
-						svgElement.innerHTML = `<text x="20" y="70" class="h3Text">${h3s[index]}</text>`;
 						let svgElementBounds = h3Polygon.getBounds();
 						L.svgOverlay(svgElement, svgElementBounds).addTo(polygonLayer);
 					}
@@ -6488,13 +6520,7 @@ export default {
 			attribution: '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap contributors</a>'
 		}).addTo(map);
 		L.layerGroup([]).addTo(map);
-		if(this.tab === 0){
-			const coords = JSON.parse(this.$props.data[0].geometry).features[0].geometry.coordinates[0][0]
-			this.centerGeo[0]=coords[1];this.centerGeo[1]=coords[0];
-		}else this.centerGeo=this.savedRequest[this.$props.city].geo
-		//56.8584, 35.9006 - тверь
-		//56.8519, 60.6122 - eкб
-		//54.1902, 37.610 - тула
+		this.centerGeo=this.savedRequest[this.$props.city].geo
 		this.$_changeTab()
 	},
 	watch:{
@@ -6538,14 +6564,7 @@ export default {
 		box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.25);
 		z-index: 1;
 		cursor: pointer;
-	}
-	.listTabs .myTab:first-child{
 		border-radius: 10px 10px 0 0;
-	}
-	.listTabs .myTab:last-child{
-		border-radius: 10px 10px 0 0;
-		position: relative;
-		left: -5px;
 	}
 	.activeTab{
 		z-index: 2;
